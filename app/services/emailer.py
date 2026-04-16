@@ -1,8 +1,8 @@
 import brevo_python
 from brevo_python.api import transactional_emails_api
-from brevo_python.model.send_smtp_email import SendSmtpEmail
-from brevo_python.model.send_smtp_email_sender import SendSmtpEmailSender
-from brevo_python.model.send_smtp_email_to import SendSmtpEmailTo
+from brevo_python.models.send_smtp_email import SendSmtpEmail
+from brevo_python.models.send_smtp_email_sender import SendSmtpEmailSender
+from brevo_python.models.send_smtp_email_to import SendSmtpEmailTo
 from app.config import settings
 
 RECIPIENTS = [settings.alert_email_faisal, settings.alert_email_aftab]
