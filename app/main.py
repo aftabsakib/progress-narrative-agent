@@ -36,8 +36,11 @@ scheduler = AsyncIOScheduler()
 async def send_daily_brief():
     from app.services.narrator import generate_daily_brief
     from app.services.emailer import send_daily_brief_email
+    from app.tools.get_recent_activity import get_recent_activity
     brief = generate_daily_brief()
-    send_daily_brief_email(brief)
+    activity_log = get_recent_activity(hours=24)
+    full_email = f"{brief}\n\n---\n\nACTIVITY LOG (LAST 24H)\n\n{activity_log}"
+    send_daily_brief_email(full_email)
 
 
 @scheduler.scheduled_job("cron", hour="*/2")
