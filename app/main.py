@@ -23,6 +23,7 @@ from app.tools.add_commitment import add_commitment
 from app.tools.correct_entry import correct_entry
 from app.tools.get_alerts import get_alerts
 from app.tools.get_artifact_status import get_artifact_status
+from app.tools.get_recent_activity import get_recent_activity
 from app.models.schemas import (
     LogActivityInput, AddCommitmentInput, CorrectEntryInput
 )
@@ -132,6 +133,17 @@ async def list_tools() -> list[Tool]:
             description="Status of all produced artifacts — sent, responded, conversion rate.",
             inputSchema={"type": "object", "properties": {}}
         ),
+        Tool(
+            name="get_recent_activity",
+            description="Show all activities logged in the last N hours. Default 24 hours. Use this to see what Faisal or Aftab logged recently.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "hours": {"type": "integer", "default": 24},
+                    "limit": {"type": "integer", "default": 20}
+                }
+            }
+        ),
     ]
 
 
@@ -160,6 +172,11 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
         result = get_alerts()
     elif name == "get_artifact_status":
         result = get_artifact_status()
+    elif name == "get_recent_activity":
+        result = get_recent_activity(
+            hours=arguments.get("hours", 24),
+            limit=arguments.get("limit", 20)
+        )
     else:
         result = f"Unknown tool: {name}"
     return [TextContent(type="text", text=result)]
