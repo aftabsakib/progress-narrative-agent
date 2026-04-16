@@ -28,7 +28,7 @@ server = Server("progress-narrative-agent")
 scheduler = AsyncIOScheduler()
 
 
-@scheduler.scheduled_job("cron", hour=7, minute=0)
+@scheduler.scheduled_job("cron", hour=4, minute=0)
 async def send_daily_brief():
     from app.services.narrator import generate_daily_brief
     from app.services.emailer import send_daily_brief_email
