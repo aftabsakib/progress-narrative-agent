@@ -1,4 +1,5 @@
 import asyncio
+from contextlib import asynccontextmanager
 from mcp.server import Server
 from mcp.server.sse import SseServerTransport
 from mcp.types import Tool, TextContent
@@ -175,12 +176,15 @@ async def health(request: Request):
     return JSONResponse({"status": "ok"})
 
 
-def startup():
+@asynccontextmanager
+async def lifespan(app):
     scheduler.start()
+    yield
+    scheduler.shutdown()
 
 
 app = Starlette(
-    on_startup=[startup],
+    lifespan=lifespan,
     routes=[
         Route("/sse", endpoint=handle_sse),
         Route("/messages", endpoint=handle_messages, methods=["POST"]),
