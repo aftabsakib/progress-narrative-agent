@@ -168,29 +168,31 @@ async def handle_sse(request: Request):
         await server.run(streams[0], streams[1], server.create_initialization_options())
 
 
-async def handle_messages(request: Request):
-    await sse.handle_post_message(request.scope, request.receive, request._send)
-
-
 async def health(request: Request):
     return JSONResponse({"status": "ok"})
 
 
 @asynccontextmanager
-async def lifespan(app):
+async def lifespan(_app):
     scheduler.start()
     yield
     scheduler.shutdown()
 
 
-app = Starlette(
+_starlette = Starlette(
     lifespan=lifespan,
     routes=[
         Route("/sse", endpoint=handle_sse),
-        Route("/messages", endpoint=handle_messages, methods=["POST"]),
         Route("/health", endpoint=health),
     ]
 )
+
+
+async def app(scope, receive, send):
+    if scope["type"] == "http" and scope.get("path", "").startswith("/messages"):
+        await sse.handle_post_message(scope, receive, send)
+    else:
+        await _starlette(scope, receive, send)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
