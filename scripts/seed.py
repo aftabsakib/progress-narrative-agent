@@ -40,22 +40,22 @@ def seed_active_pipeline():
             "notes": "Current central case. Proposal being rebuilt. Working group test target."
         },
         {
-            "name": "True Corporation",
-            "company": "True Corporation",
-            "tier": "1",
-            "pipeline_track": "global_south",
-            "role_stage": 1,
-            "status": "active",
-            "notes": "Connected through wealthy Thai family. Separate InMail opportunity."
-        },
-        {
-            "name": "Chaudhry Group",
-            "company": "Chaudhry Group",
+            "name": "Orange Maroc",
+            "company": "Orange Maroc",
             "tier": "2",
             "pipeline_track": "global_south",
             "role_stage": 1,
             "status": "active",
-            "notes": "Nepal. Rahul contacted but not fully engaged."
+            "notes": "Active pipeline contact."
+        },
+        {
+            "name": "Ncell",
+            "company": "Ncell",
+            "tier": "2",
+            "pipeline_track": "global_south",
+            "role_stage": 1,
+            "status": "active",
+            "notes": "Nepal telco. $50K decision mandate engagement in progress."
         },
     ]
     for c in pipeline:
