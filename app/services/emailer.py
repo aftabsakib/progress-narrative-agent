@@ -1,22 +1,31 @@
-import sendgrid
-from sendgrid.helpers.mail import Mail, To
+import brevo_python
+from brevo_python.api import transactional_emails_api
+from brevo_python.model.send_smtp_email import SendSmtpEmail
+from brevo_python.model.send_smtp_email_sender import SendSmtpEmailSender
+from brevo_python.model.send_smtp_email_to import SendSmtpEmailTo
 from app.config import settings
-
-sg = sendgrid.SendGridAPIClient(api_key=settings.sendgrid_api_key)
 
 RECIPIENTS = [settings.alert_email_faisal, settings.alert_email_aftab]
 
 
+def _get_api():
+    configuration = brevo_python.Configuration()
+    configuration.api_key["api-key"] = settings.brevo_api_key
+    client = brevo_python.ApiClient(configuration)
+    return transactional_emails_api.TransactionalEmailsApi(client)
+
+
 def send_alert_email(subject: str, body: str, recipients: list[str] = None) -> bool:
     to_list = recipients or RECIPIENTS
-    message = Mail(
-        from_email=settings.from_email,
-        to_emails=[To(email) for email in to_list],
-        subject=f"[Tangier Agent] {subject}",
-        plain_text_content=body
-    )
     try:
-        sg.send(message)
+        api = _get_api()
+        email = SendSmtpEmail(
+            sender=SendSmtpEmailSender(name="Tangier Agent", email=settings.from_email),
+            to=[SendSmtpEmailTo(email=addr) for addr in to_list],
+            subject=f"[Tangier Agent] {subject}",
+            text_content=body
+        )
+        api.send_transac_email(email)
         return True
     except Exception as e:
         print(f"Email send failed: {e}")

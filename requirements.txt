@@ -4,7 +4,7 @@ supabase==2.15.2
 anthropic==0.52.0
 openai==1.77.0
 mcp==1.27.0
-sendgrid==6.11.0
+brevo-python==1.0.0
 python-dotenv==1.1.0
 pydantic==2.11.4
 pydantic-settings==2.9.1

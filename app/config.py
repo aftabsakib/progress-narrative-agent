@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     supabase_service_key: str = ""
     anthropic_api_key: str = ""
     openai_api_key: str = ""
-    sendgrid_api_key: str = ""
+    brevo_api_key: str = ""
     alert_email_faisal: str = "faisal@tangier.us"
     alert_email_aftab: str = "community@evqlabs.com"
     from_email: str = "agent@tangier.us"
