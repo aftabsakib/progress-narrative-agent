@@ -2,6 +2,35 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Session Start (REQUIRED)
+
+At the start of every session in this project, immediately do the following — before anything else:
+
+1. Call `get_alerts` via the `progress-narrative-agent` MCP tool
+2. Display the alerts
+3. Then display this exact command reference:
+
+---
+
+**Tangier Progress Agent — Command Reference**
+
+| Command | What to say | What it does |
+|---|---|---|
+| Log activity | "log this — [paste any text] — from aftab/faisal" | Extracts activities, commitments, contact updates from anything you paste |
+| Daily brief | "get daily brief" | Today's narrative: what moved, what's stalled, today's priority |
+| Velocity report | "velocity report" | Outreach rate vs target, Tier 1 stalls, AAEP countdown |
+| Pipeline snapshot | "pipeline snapshot" | Where each principal sits, stalls flagged |
+| Commitments | "check commitments" | All open commitments, overdue flagged |
+| Score activity | "score this: [description]" | Tests any activity against Tangier's 3 strategic goals |
+| Add commitment | "add commitment: [what, who, by when]" | Log a commitment without a full transcript |
+| Fix an entry | "correct entry: [what to fix]" | Fix a wrong activity, stage, or commitment |
+| Alerts | "get alerts" | All pending alerts right now |
+| Artifact status | "artifact status" | Status of all produced artifacts — sent, responded, conversion rate |
+
+**Plain English works.** You don't need exact commands. Just describe what you want.
+
+---
+
 ## What This Is
 
 The Progress Tracking and Narrative Agent for Tangier. A chief-of-staff agent that monitors organizational velocity, tracks corridor construction progress, holds Faisal and Aftab accountable to commitments, and generates daily narrative through 11 MCP tools and email alerts.
