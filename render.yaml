@@ -16,8 +16,8 @@ services:
       - key: ALERT_EMAIL_FAISAL
         value: faisal@tangier.us
       - key: ALERT_EMAIL_AFTAB
-        value: community@evqlabs.com
+        value: et.am.sakib@gmail.com
       - key: FROM_EMAIL
-        value: agent@tangier.us
+        value: office@tangier.us
       - key: AAEP_WINDOW_END
         value: "2026-06-30"
