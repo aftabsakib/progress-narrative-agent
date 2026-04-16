@@ -1,4 +1,5 @@
 import asyncio
+import contextvars
 from contextlib import asynccontextmanager
 from mcp.server import Server
 from mcp.server.sse import SseServerTransport
@@ -9,6 +10,8 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import uvicorn
+
+current_user: contextvars.ContextVar[str] = contextvars.ContextVar("current_user", default="unknown")
 
 from app.tools.log_activity import log_activity
 from app.tools.get_daily_brief import get_daily_brief_tool
@@ -59,7 +62,7 @@ async def list_tools() -> list[Tool]:
                     "created_by": {"type": "string", "enum": ["faisal", "aftab"]},
                     "source": {"type": "string", "default": "manual"}
                 },
-                "required": ["text", "created_by"]
+                "required": ["text"]
             }
         ),
         Tool(
@@ -136,6 +139,8 @@ async def list_tools() -> list[Tool]:
 async def call_tool(name: str, arguments: dict) -> list[TextContent]:
     result = ""
     if name == "log_activity":
+        if "created_by" not in arguments:
+            arguments["created_by"] = current_user.get()
         result = await log_activity(LogActivityInput(**arguments))
     elif name == "get_daily_brief":
         result = get_daily_brief_tool()
@@ -164,6 +169,8 @@ sse = SseServerTransport("/messages")
 
 
 async def handle_sse(request: Request):
+    user = request.query_params.get("user", "unknown")
+    current_user.set(user)
     async with sse.connect_sse(request.scope, request.receive, request._send) as streams:
         await server.run(streams[0], streams[1], server.create_initialization_options())
 
