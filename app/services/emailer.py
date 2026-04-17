@@ -33,7 +33,11 @@ def send_alert_email(subject: str, body: str, recipients: list[str] = None) -> b
 
 
 def send_daily_brief_email(brief_body: str) -> bool:
-    return send_alert_email("Daily Brief", brief_body)
+    return send_alert_email("Morning Brief", brief_body)
+
+
+def send_acceleration_email(body: str) -> bool:
+    return send_alert_email("Afternoon Acceleration", body)
 
 
 def send_alert_emails(alerts: list[dict]) -> None:

@@ -44,6 +44,14 @@ async def send_daily_brief():
     send_daily_brief_email(full_email)
 
 
+@scheduler.scheduled_job("cron", hour=10, minute=0)
+async def send_afternoon_brief():
+    from app.services.narrator import generate_acceleration_brief
+    from app.services.emailer import send_acceleration_email
+    brief = generate_acceleration_brief()
+    send_acceleration_email(brief)
+
+
 @scheduler.scheduled_job("cron", hour="*/2")
 async def check_and_send_alerts():
     from app.services.alerts import run_all_alert_checks
@@ -150,8 +158,13 @@ async def list_tools() -> list[Tool]:
         ),
         Tool(
             name="send_brief_now",
-            description="Manually trigger the daily brief email right now — sends the narrative brief plus last 24h activity log to faisal@tangier.us and et.am.sakib@gmail.com.",
-            inputSchema={"type": "object", "properties": {}}
+            description="Manually trigger an email brief right now. brief_type: 'morning' (default) sends the narrative brief + activity log. 'afternoon' sends the acceleration brief.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "brief_type": {"type": "string", "enum": ["morning", "afternoon"]}
+                }
+            }
         ),
     ]
 
@@ -187,7 +200,7 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
             limit=arguments.get("limit", 20)
         )
     elif name == "send_brief_now":
-        result = send_brief_now()
+        result = send_brief_now(arguments.get("brief_type", "morning"))
     else:
         result = f"Unknown tool: {name}"
     return [TextContent(type="text", text=result)]
