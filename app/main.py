@@ -24,6 +24,7 @@ from app.tools.correct_entry import correct_entry
 from app.tools.get_alerts import get_alerts
 from app.tools.get_artifact_status import get_artifact_status
 from app.tools.get_recent_activity import get_recent_activity
+from app.tools.send_brief_now import send_brief_now
 from app.models.schemas import (
     LogActivityInput, AddCommitmentInput, CorrectEntryInput
 )
@@ -147,6 +148,11 @@ async def list_tools() -> list[Tool]:
                 }
             }
         ),
+        Tool(
+            name="send_brief_now",
+            description="Manually trigger the daily brief email right now — sends the narrative brief plus last 24h activity log to faisal@tangier.us and et.am.sakib@gmail.com.",
+            inputSchema={"type": "object", "properties": {}}
+        ),
     ]
 
 
@@ -180,6 +186,8 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
             hours=arguments.get("hours", 24),
             limit=arguments.get("limit", 20)
         )
+    elif name == "send_brief_now":
+        result = send_brief_now()
     else:
         result = f"Unknown tool: {name}"
     return [TextContent(type="text", text=result)]
