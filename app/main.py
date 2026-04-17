@@ -29,7 +29,7 @@ from app.models.schemas import (
 )
 
 server = Server("progress-narrative-agent")
-scheduler = AsyncIOScheduler()
+scheduler = AsyncIOScheduler(job_defaults={"misfire_grace_time": 600})
 
 
 @scheduler.scheduled_job("cron", hour=4, minute=0)
