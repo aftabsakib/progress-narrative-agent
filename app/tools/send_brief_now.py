@@ -11,7 +11,7 @@ def send_brief_now(brief_type: str = "morning") -> str:
     else:
         brief = generate_daily_brief()
         activity_log = get_recent_activity(hours=24)
-        full_email = f"{brief}\n\n---\n\nACTIVITY LOG (LAST 24H)\n\n{activity_log}"
+        full_email = f"{brief}\n\n---\n\n{activity_log}"
         sent = send_daily_brief_email(full_email)
         label = "Morning brief"
 

@@ -16,18 +16,26 @@ def get_recent_activity(hours: int = 24, limit: int = 30) -> str:
     if not rows.data:
         return f"No activities logged in the last {hours} hours."
 
+    # Deduplicate by description (same text logged twice from same transcript)
+    seen_descriptions = set()
+    unique_rows = []
+    for r in rows.data:
+        desc = r.get("description", "").strip()
+        if desc not in seen_descriptions:
+            seen_descriptions.add(desc)
+            unique_rows.append(r)
+
     # Group by contact
     by_contact: dict = {}
     no_contact = []
 
-    for r in rows.data:
+    for r in unique_rows:
         contact = r.get("contact_name") or r.get("contact_id") or None
-        action_type = r.get("activity_type", "update")
         description = r.get("description", "")
         who = r.get("created_by", "?")
         ts = r.get("created_at", "")[:16].replace("T", " ")
 
-        entry = f"    [{who}] {description} ({ts})"
+        entry = (who, description, ts)
 
         if contact:
             if contact not in by_contact:
@@ -36,17 +44,23 @@ def get_recent_activity(hours: int = 24, limit: int = 30) -> str:
         else:
             no_contact.append(entry)
 
-    lines = [f"ACTIVITY LOG — last {hours}h ({len(rows.data)} entries)", ""]
+    lines = [f"## Activity Log — Last {hours}h ({len(unique_rows)} entries)", ""]
 
     if by_contact:
-        lines.append("BY CONTACT:")
         for contact, entries in by_contact.items():
-            lines.append(f"  {contact}:")
-            lines.extend(entries)
+            lines.append(f"### {contact}")
             lines.append("")
+            for who, description, ts in entries:
+                lines.append(f"- **[{who}]** {description}")
+                lines.append(f"  *{ts}*")
+                lines.append("")
 
     if no_contact:
-        lines.append("OTHER ACTIVITY:")
-        lines.extend(no_contact)
+        lines.append("### Other Activity")
+        lines.append("")
+        for who, description, ts in no_contact:
+            lines.append(f"- **[{who}]** {description}")
+            lines.append(f"  *{ts}*")
+            lines.append("")
 
     return "\n".join(lines)
