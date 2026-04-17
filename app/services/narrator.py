@@ -3,6 +3,7 @@ from datetime import date, timedelta
 from app.config import settings
 from app.services.master_context import MASTER_CONTEXT
 from app.services.velocity import get_velocity_summary
+from app.services.memory import get_parallels_for_stalled_contacts
 from app.database import db
 
 anthropic_client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
@@ -82,7 +83,7 @@ def generate_daily_brief() -> str:
         .execute()
 
     pipeline = db.table("contacts")\
-        .select("name, company, tier, role_stage, last_touched, pipeline_track")\
+        .select("name, company, tier, role_stage, last_touched, pipeline_track, days_stalled")\
         .neq("status", "cadaver")\
         .execute()
 
@@ -92,6 +93,9 @@ def generate_daily_brief() -> str:
     # Separate US-side contacts
     us_contacts = [c for c in pipeline.data if c.get("pipeline_track") == "us_side"]
     tier1_contacts = [c for c in pipeline.data if c.get("tier") == "1"]
+    stalled_tier1 = [c for c in tier1_contacts if (c.get("days_stalled") or 0) >= 5]
+
+    historical_parallels = get_parallels_for_stalled_contacts(stalled_tier1)
 
     context = f"""
 DATE: {today.isoformat()}
@@ -110,7 +114,7 @@ ACTIVITIES TODAY ({len(activities.data)}):
 {chr(10).join(f"- [{a.get('created_by', '?')}] {a['description']}" for a in activities.data) or "None logged"}
 
 TIER 1 PIPELINE ({len(tier1_contacts)} contacts):
-{chr(10).join(f"- {c['name']} ({c.get('company', '')}) — Stage {c.get('role_stage', 1)} — last touched: {c.get('last_touched', 'never')}" for c in tier1_contacts) or "None"}
+{chr(10).join(f"- {c['name']} ({c.get('company', '')}) — Stage {c.get('role_stage', 1)} — last touched: {c.get('last_touched', 'never')} — stalled {c.get('days_stalled') or 0}d" for c in tier1_contacts) or "None"}
 
 US SIDE ({len(us_contacts)} contacts):
 {chr(10).join(f"- {c['name']} ({c.get('company', '')}) — last touched: {c.get('last_touched', 'never')}" for c in us_contacts) or "None tracked yet"}
@@ -120,6 +124,9 @@ OVERDUE COMMITMENTS ({len(overdue.data)}):
 
 OPEN ALERTS ({len(alerts.data)}):
 {chr(10).join(f"- [{a['severity'].upper()}] {a['message']}" for a in alerts.data) or "None"}
+
+HISTORICAL PARALLELS (past activities similar to current stalls):
+{historical_parallels}
 """
 
     response = anthropic_client.messages.create(
@@ -134,7 +141,7 @@ OPEN ALERTS ({len(alerts.data)}):
 
 2. WHAT MOVED — only things that actually advanced. Strategic reframings count. One to two sentences per item. One sentence for a win, move on.
 
-3. WHAT IS AT RISK — items that are genuinely at risk, ordered by urgency and strategic weight. Name the specific problem and the specific action required. Distinguish between a proposal pending response (not stalled) and a contact not touched (stalled). US LinkedIn outreach is a named strategic lane — flag if zero.
+3. WHAT IS AT RISK — items that are genuinely at risk, ordered by urgency and strategic weight. Name the specific problem and the specific action required. Distinguish between a proposal pending response (not stalled) and a contact not touched (stalled). US LinkedIn outreach is a named strategic lane — flag if zero. If HISTORICAL PARALLELS are provided, reference what worked in past similar situations — one sentence per stall, only if the parallel is genuinely instructive.
 
 4. TODAY'S PRIORITIES — one primary action plus up to three supporting actions. Each one sentence. No more.
 
