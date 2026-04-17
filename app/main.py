@@ -54,10 +54,7 @@ async def send_afternoon_brief():
 
 @scheduler.scheduled_job("cron", hour="*/2")
 async def check_and_send_alerts():
-    from app.services.alerts import run_all_alert_checks
-    from app.database import db
-    run_all_alert_checks()
-    # Alert emails disabled — alerts surface in session and morning brief only
+    pass  # Alerts paused — re-enable when ready
 
 
 @server.list_tools()

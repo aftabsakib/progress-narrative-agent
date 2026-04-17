@@ -75,13 +75,6 @@ def generate_daily_brief() -> str:
         .lt("due_date", today.isoformat())\
         .execute()
 
-    alerts = db.table("alerts")\
-        .select("*")\
-        .eq("actioned", False)\
-        .order("created_at", desc=True)\
-        .limit(10)\
-        .execute()
-
     pipeline = db.table("contacts")\
         .select("name, company, tier, role_stage, last_touched, pipeline_track, days_stalled")\
         .neq("status", "cadaver")\
@@ -121,9 +114,6 @@ US SIDE ({len(us_contacts)} contacts):
 
 OVERDUE COMMITMENTS ({len(overdue.data)}):
 {chr(10).join(f"- {c['description']} — promised by {c['promised_by']} — due {c.get('due_date', 'no date')}" for c in overdue.data) or "None"}
-
-OPEN ALERTS ({len(alerts.data)}):
-{chr(10).join(f"- [{a['severity'].upper()}] {a['message']}" for a in alerts.data) or "None"}
 
 HISTORICAL PARALLELS (past activities similar to current stalls):
 {historical_parallels}
