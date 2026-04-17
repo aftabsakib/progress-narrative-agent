@@ -1,7 +1,7 @@
 from app.services.embedder import embed_text, find_similar_activities
 
 
-def retrieve_similar_activities(context: str, limit: int = 5, min_similarity: float = 0.72) -> list[dict]:
+def retrieve_similar_activities(context: str, limit: int = 5, min_similarity: float = 0.80) -> list[dict]:
     """Embed context text and return semantically similar past activities."""
     embedding = embed_text(context)
     results = find_similar_activities(embedding, limit=limit)
