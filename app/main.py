@@ -166,6 +166,7 @@ async def list_tools() -> list[Tool]:
 
 @server.call_tool()
 async def call_tool(name: str, arguments: dict) -> list[TextContent]:
+    arguments = arguments or {}
     result = ""
     if name == "log_activity":
         if "created_by" not in arguments:
