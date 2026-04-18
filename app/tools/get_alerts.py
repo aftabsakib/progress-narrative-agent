@@ -4,6 +4,10 @@ from app.database import db
 def get_alerts() -> str:
     from app.services.alerts import run_all_alert_checks
     from app.services.emailer import send_alert_emails
+    from app.services.settings_service import alerts_paused
+
+    if alerts_paused():
+        return "Alerts are paused. Say 'resume alerts' to turn them back on."
 
     run_all_alert_checks()
 

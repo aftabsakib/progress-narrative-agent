@@ -127,6 +127,13 @@ create table alerts (
     created_at timestamptz default now()
 );
 
+-- Agent settings: key-value store for runtime configuration
+create table if not exists agent_settings (
+    key text primary key,
+    value text not null,
+    updated_at timestamptz default now()
+);
+
 -- Indexes
 create index on activities using ivfflat (embedding vector_cosine_ops) with (lists = 100);
 create index on activities (date desc);

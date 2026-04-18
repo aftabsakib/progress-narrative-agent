@@ -25,6 +25,7 @@ from app.tools.get_alerts import get_alerts
 from app.tools.get_artifact_status import get_artifact_status
 from app.tools.get_recent_activity import get_recent_activity
 from app.tools.send_brief_now import send_brief_now
+from app.tools.toggle_alerts import toggle_alerts
 from app.models.schemas import (
     LogActivityInput, AddCommitmentInput, CorrectEntryInput
 )
@@ -38,6 +39,9 @@ async def send_daily_brief():
     from app.services.narrator import generate_daily_brief
     from app.services.emailer import send_daily_brief_email
     from app.tools.get_recent_activity import get_recent_activity
+    from app.services.settings_service import alerts_paused
+    if alerts_paused():
+        return
     brief = generate_daily_brief()
     activity_log = get_recent_activity(hours=24)
     full_email = f"{brief}\n\n---\n\nACTIVITY LOG (LAST 24H)\n\n{activity_log}"
@@ -48,6 +52,9 @@ async def send_daily_brief():
 async def send_afternoon_brief():
     from app.services.narrator import generate_acceleration_brief
     from app.services.emailer import send_acceleration_email
+    from app.services.settings_service import alerts_paused
+    if alerts_paused():
+        return
     brief = generate_acceleration_brief()
     send_acceleration_email(brief)
 
@@ -161,6 +168,17 @@ async def list_tools() -> list[Tool]:
                 }
             }
         ),
+        Tool(
+            name="toggle_alerts",
+            description="Pause or resume all alerts and scheduled email briefs.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "paused": {"type": "boolean"}
+                },
+                "required": ["paused"]
+            }
+        ),
     ]
 
 
@@ -197,6 +215,8 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
         )
     elif name == "send_brief_now":
         result = send_brief_now(arguments.get("brief_type", "morning"))
+    elif name == "toggle_alerts":
+        result = toggle_alerts(arguments["paused"])
     else:
         result = f"Unknown tool: {name}"
     return [TextContent(type="text", text=result)]
