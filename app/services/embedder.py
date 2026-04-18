@@ -1,7 +1,7 @@
 from openai import OpenAI
 from app.config import settings
 
-openai_client = OpenAI(api_key=settings.openai_api_key)
+openai_client = OpenAI(api_key=settings.openai_api_key, timeout=10.0)
 
 
 def embed_text(text: str) -> list[float]:

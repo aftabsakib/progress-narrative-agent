@@ -40,8 +40,11 @@ def get_parallels_for_stalled_contacts(stalled: list[dict]) -> str:
             f"Tier 1 contact stalled at stage {stage}, no movement for {days} days. "
             f"Contact: {name}, {company}."
         )
-        similar = retrieve_similar_activities(query, limit=3)
-        formatted = format_historical_parallels(similar)
+        try:
+            similar = retrieve_similar_activities(query, limit=3)
+            formatted = format_historical_parallels(similar)
+        except Exception:
+            formatted = "Retrieval timed out — no historical parallels available."
         sections.append(f"{name} (Stage {stage}, {days}d stalled):\n{formatted}")
 
     return "\n\n".join(sections)

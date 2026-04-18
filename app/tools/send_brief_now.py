@@ -4,17 +4,20 @@ from app.tools.get_recent_activity import get_recent_activity
 
 
 def send_brief_now(brief_type: str = "morning") -> str:
-    if brief_type == "afternoon":
-        brief = generate_acceleration_brief()
-        sent = send_acceleration_email(brief)
-        label = "Afternoon acceleration brief"
-    else:
-        brief = generate_daily_brief()
-        activity_log = get_recent_activity(hours=24)
-        full_email = f"{brief}\n\n---\n\n{activity_log}"
-        sent = send_daily_brief_email(full_email)
-        label = "Morning brief"
+    try:
+        if brief_type == "afternoon":
+            brief = generate_acceleration_brief()
+            sent = send_acceleration_email(brief)
+            label = "Afternoon acceleration brief"
+        else:
+            brief = generate_daily_brief()
+            activity_log = get_recent_activity(hours=24)
+            full_email = f"{brief}\n\n---\n\n{activity_log}"
+            sent = send_daily_brief_email(full_email)
+            label = "Morning brief"
+    except Exception as e:
+        return f"Brief generation failed: {e}"
 
     if sent:
         return f"{label} sent to faisal@tangier.us and et.am.sakib@gmail.com."
-    return "Email failed to send — check Brevo sender verification for the FROM_EMAIL address."
+    return "Email failed to send — check email service logs."
