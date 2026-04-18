@@ -21,12 +21,19 @@ def get_aaep_days_remaining(aaep_window_end: str = None) -> int:
 
 def get_velocity_summary() -> dict:
     from app.database import db
+    from datetime import timedelta
 
     today = date.today()
+    yesterday = today - timedelta(days=1)
 
     activities_today = db.table("activities")\
         .select("id")\
         .eq("date", today.isoformat())\
+        .execute()
+
+    activities_yesterday = db.table("activities")\
+        .select("id")\
+        .eq("date", yesterday.isoformat())\
         .execute()
 
     contacts = db.table("contacts")\
@@ -48,14 +55,21 @@ def get_velocity_summary() -> dict:
     us_ids = [c["id"] for c in us_contacts.data]
 
     if us_ids:
-        us_touches = db.table("activities")\
+        us_touches_today = db.table("activities")\
             .select("id")\
             .eq("date", today.isoformat())\
             .in_("contact_id", us_ids)\
             .execute()
-        us_touch_count = len(us_touches.data)
+        us_touches_yesterday = db.table("activities")\
+            .select("id")\
+            .eq("date", yesterday.isoformat())\
+            .in_("contact_id", us_ids)\
+            .execute()
+        us_touch_count = len(us_touches_today.data)
+        us_touch_count_yesterday = len(us_touches_yesterday.data)
     else:
         us_touch_count = 0
+        us_touch_count_yesterday = 0
 
     metrics = db.table("velocity_metrics")\
         .select("*")\
@@ -65,12 +79,17 @@ def get_velocity_summary() -> dict:
 
     inmails_remaining = metrics.data[0]["inmails_remaining"] if metrics.data else 45
 
+    count_today = len(activities_today.data)
+    count_yesterday = len(activities_yesterday.data)
+
     return {
-        "outreach_count_today": len(activities_today.data),
+        "outreach_count_today": count_today,
+        "outreach_count_yesterday": count_yesterday,
         "target": 10,
-        "on_target": len(activities_today.data) >= 10,
+        "on_target": count_today >= 10,
         "stalled_tier1": stalled_tier1,
         "us_side_touches_today": us_touch_count,
+        "us_side_touches_yesterday": us_touch_count_yesterday,
         "inmails_remaining": inmails_remaining,
         "aaep_days_remaining": get_aaep_days_remaining(),
     }

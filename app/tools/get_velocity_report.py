@@ -3,18 +3,18 @@ from app.database import db
 from datetime import date, timedelta
 
 
-def _week_comparison() -> tuple[int, int]:
+def _day_comparison() -> tuple[int, int]:
     today = date.today()
-    this_week = db.table("activities")\
+    yesterday = today - timedelta(days=1)
+    today_count = db.table("activities")\
         .select("id")\
-        .gte("date", (today - timedelta(days=7)).isoformat())\
+        .eq("date", today.isoformat())\
         .execute()
-    last_week = db.table("activities")\
+    yesterday_count = db.table("activities")\
         .select("id")\
-        .gte("date", (today - timedelta(days=14)).isoformat())\
-        .lt("date", (today - timedelta(days=7)).isoformat())\
+        .eq("date", yesterday.isoformat())\
         .execute()
-    return len(this_week.data), len(last_week.data)
+    return len(today_count.data), len(yesterday_count.data)
 
 
 def _us_linkedin_count() -> int:
@@ -29,28 +29,28 @@ def _us_linkedin_count() -> int:
 
 def get_velocity_report() -> str:
     v = get_velocity_summary()
-    this_week, last_week = _week_comparison()
+    today_count, yesterday_count = _day_comparison()
     us_linkedin = _us_linkedin_count()
 
-    if last_week == 0:
-        trend = "no prior week data"
-    elif this_week > last_week:
-        pct = round(((this_week - last_week) / last_week) * 100)
-        trend = f"UP {pct}% vs last week"
-    elif this_week < last_week:
-        pct = round(((last_week - this_week) / last_week) * 100)
-        trend = f"DOWN {pct}% vs last week"
+    if yesterday_count == 0:
+        trend = "no activity yesterday"
+    elif today_count > yesterday_count:
+        diff = today_count - yesterday_count
+        trend = f"up {diff} vs yesterday"
+    elif today_count < yesterday_count:
+        diff = yesterday_count - today_count
+        trend = f"down {diff} vs yesterday"
     else:
-        trend = "same as last week"
+        trend = "same as yesterday"
 
     lines = [
         f"VELOCITY REPORT — {date.today().isoformat()}",
         "",
         f"Outreach today:      {v['outreach_count_today']}/{v['target']} {'ON TARGET' if v['on_target'] else 'BELOW TARGET'}",
-        f"This week vs last:   {this_week} activities this week / {last_week} last week — {trend}",
+        f"Yesterday:           {yesterday_count} activities — {trend}",
         f"AAEP window:         {v['aaep_days_remaining']} days remaining",
         f"InMails available:   {v['inmails_remaining']}",
-        f"U.S.-side today:     {v['us_side_touches_today']} touches",
+        f"U.S.-side today:     {v['us_side_touches_today']} touches (yesterday: {v['us_side_touches_yesterday']})",
         f"US LinkedIn (7d):    {us_linkedin} outreaches {'— ZERO this week' if us_linkedin == 0 else ''}",
         "",
         f"TIER 1 STALLED ({len(v['stalled_tier1'])}):",

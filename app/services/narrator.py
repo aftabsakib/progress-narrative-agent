@@ -9,36 +9,33 @@ from app.database import db
 anthropic_client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
 
 
-def _get_week_comparison() -> str:
+def _get_day_comparison() -> str:
     today = date.today()
-    last_week_start = (today - timedelta(days=7)).isoformat()
+    yesterday = today - timedelta(days=1)
 
-    this_week = db.table("activities")\
+    today_count = db.table("activities")\
         .select("id")\
-        .gte("date", (today - timedelta(days=7)).isoformat())\
+        .eq("date", today.isoformat())\
         .execute()
 
-    last_week = db.table("activities")\
+    yesterday_count = db.table("activities")\
         .select("id")\
-        .gte("date", (today - timedelta(days=14)).isoformat())\
-        .lt("date", last_week_start)\
+        .eq("date", yesterday.isoformat())\
         .execute()
 
-    this_count = len(this_week.data)
-    last_count = len(last_week.data)
+    tc = len(today_count.data)
+    yc = len(yesterday_count.data)
 
-    if last_count == 0:
-        direction = "no prior week data"
-    elif this_count > last_count:
-        pct = round(((this_count - last_count) / last_count) * 100)
-        direction = f"up {pct}% vs last week"
-    elif this_count < last_count:
-        pct = round(((last_count - this_count) / last_count) * 100)
-        direction = f"down {pct}% vs last week"
+    if yc == 0:
+        direction = "no activity yesterday"
+    elif tc > yc:
+        direction = f"up {tc - yc} vs yesterday"
+    elif tc < yc:
+        direction = f"down {yc - tc} vs yesterday"
     else:
-        direction = "same as last week"
+        direction = "same as yesterday"
 
-    return f"This week: {this_count} activities. Last week: {last_count}. Direction: {direction}."
+    return f"Today: {tc} activities. Yesterday: {yc}. Direction: {direction}."
 
 
 def _get_strategic_reframings() -> str:
@@ -80,7 +77,7 @@ def generate_daily_brief() -> str:
         .neq("status", "cadaver")\
         .execute()
 
-    week_comparison = _get_week_comparison()
+    week_comparison = _get_day_comparison()
     reframings = _get_strategic_reframings()
 
     # Separate US-side contacts
@@ -97,7 +94,7 @@ OUTREACH TODAY: {velocity['outreach_count_today']}/{velocity['target']}
 US SIDE TOUCHES TODAY: {velocity['us_side_touches_today']}
 INMAILS REMAINING: {velocity['inmails_remaining']}
 
-VELOCITY TREND:
+DAILY COMPARISON (today vs yesterday):
 {week_comparison}
 
 STRATEGIC REFRAMINGS (last 24h):
