@@ -15,6 +15,7 @@ Extract from the provided text:
    - A complete, human-readable sentence describing exactly what happened
    - Specific enough to stand alone without context
    - Tagged with action_type: one of outreach, call, proposal_sent, commitment_made, strategic_reframing, research, asset_created, follow_up, relationship_touch, us_side_outreach, internal
+   - Tagged with contact_name: the single most relevant contact or company this activity is about (e.g. "Banglalink", "Ekaraj", "True Corporation"). Null if purely internal with no external contact.
    - Example good description: "Faisal sent revised two-pager to El Kope (Cell C CFO) correcting Tangier's positioning from AI vendor to governed operator"
    - Example bad description: "update" or "sent document" or "position metrics snapshot recorded"
 
@@ -30,7 +31,7 @@ Return valid JSON only. No explanation.
 
 JSON structure:
 {
-  "activities": [{"description": "...", "action_type": "..."}],
+  "activities": [{"description": "...", "action_type": "...", "contact_name": "...or null"}],
   "commitments": [{"description": "...", "due_date": "...", "promised_by": "...", "contact_name": "..."}],
   "contacts_mentioned": ["..."],
   "intelligence_triggers": [{"type": "...", "description": "..."}],

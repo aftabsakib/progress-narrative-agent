@@ -5,6 +5,26 @@ from app.database import db
 from app.models.schemas import LogActivityInput
 
 
+def _resolve_contact_id(contact_name: str) -> str | None:
+    if not contact_name:
+        return None
+    name = contact_name.strip()
+    result = db.table("contacts").select("id").or_(
+        f"name.ilike.{name},company.ilike.{name}"
+    ).limit(1).execute()
+    if result.data:
+        return result.data[0]["id"]
+    new_contact = db.table("contacts").insert({
+        "name": name,
+        "company": name,
+        "tier": "3",
+        "status": "active",
+        "pipeline_track": "global_south",
+        "notes": "Auto-created from activity log"
+    }).execute()
+    return new_contact.data[0]["id"] if new_contact.data else None
+
+
 async def log_activity(input: LogActivityInput) -> str:
     extracted = await extract_from_text(input.text)
 
@@ -19,19 +39,23 @@ async def log_activity(input: LogActivityInput) -> str:
         if isinstance(activity, dict):
             description = activity.get("description", "")
             action_type = activity.get("action_type", "update")
+            contact_name = activity.get("contact_name")
         else:
             description = str(activity)
             action_type = "update"
+            contact_name = None
 
         if not description:
             continue
 
+        contact_id = _resolve_contact_id(contact_name)
         embedding = embed_text(description)
         db.table("activities").insert({
             "date": date.today().isoformat(),
             "source": input.source,
             "description": description,
             "activity_type": action_type,
+            "contact_id": contact_id,
             "embedding": embedding,
             "created_by": input.created_by,
             "strategic_score": 0
