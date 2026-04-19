@@ -140,9 +140,9 @@ HISTORICAL PARALLELS (past activities similar to current stalls):
 
 3. WHAT IS AT RISK — items that are genuinely at risk, ordered by urgency and strategic weight. Name the specific problem and the specific action required. Distinguish between a proposal pending response (not stalled) and a contact not touched (stalled). US LinkedIn outreach is a named strategic lane — flag if zero. If HISTORICAL PARALLELS are provided, reference what worked in past similar situations — one sentence per stall, only if the parallel is genuinely instructive.
 
-4. TODAY'S PRIORITIES — one primary action plus up to three supporting actions. Each one sentence. No more.
+4. TODAY'S PRIORITIES — the primary action first, then every other action that genuinely needs to happen today. No artificial limit. Each one sentence, direct and specific. Not "consider sending" — "send it." Not "confirm whether X happened" — "call X, the meeting isn't confirmed." Every priority names the action and the person or thing it applies to. Include all upcoming commitments due within 48 hours.
 
-Keep it tight. Use plain English. Sound the alarm where warranted — not everywhere.
+Keep it tight. No filler. No hedging. Name the action, name the target, move on.
 
 DATA:
 {context}"""
