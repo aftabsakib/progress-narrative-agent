@@ -106,7 +106,7 @@ Yesterday: {velocity['outreach_count_yesterday']}
 Day before yesterday: {velocity.get('outreach_count_two_days_ago', 'N/A')}
 
 US SIDE — TODAY (day not yet complete):
-Today so far: {velocity['us_side_touches_today']}
+Today so far: {velocity['us_side_touches_today']} (target: {velocity['us_side_target']})
 
 US SIDE TREND — completed days only:
 Yesterday: {velocity['us_side_touches_yesterday']}

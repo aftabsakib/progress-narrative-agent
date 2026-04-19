@@ -31,7 +31,7 @@ Yesterday: {v['outreach_count_yesterday']}
 Day before yesterday: {v['us_side_touches_two_days_ago']}
 
 U.S.-SIDE OUTREACH:
-Today so far: {v['us_side_touches_today']}
+Today so far: {v['us_side_touches_today']} (target: {v['us_side_target']})
 Yesterday (complete): {v['us_side_touches_yesterday']}
 Two days ago (complete): {v['us_side_touches_two_days_ago']}
 

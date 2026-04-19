@@ -22,6 +22,7 @@ def get_aaep_days_remaining(aaep_window_end: str = None) -> int:
 def get_velocity_summary() -> dict:
     from app.database import db
     from datetime import timedelta
+    from app.services.settings_service import get_setting
 
     today = date.today()
     yesterday = today - timedelta(days=1)
@@ -90,12 +91,14 @@ def get_velocity_summary() -> dict:
 
     count_today = len(activities_today.data)
     count_yesterday = len(activities_yesterday.data)
+    us_side_target = int(get_setting("us_side_daily_target", default=20))
 
     return {
         "outreach_count_today": count_today,
         "outreach_count_yesterday": count_yesterday,
         "outreach_count_two_days_ago": len(activities_two_days_ago.data),
         "target": 10,
+        "us_side_target": us_side_target,
         "on_target": count_today >= 10,
         "stalled_tier1": stalled_tier1,
         "us_side_touches_today": us_touch_count,
