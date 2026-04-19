@@ -97,12 +97,20 @@ def generate_daily_brief() -> str:
     context = f"""
 DATE: {today.isoformat()}
 AAEP DAYS REMAINING: {velocity['aaep_days_remaining']}
-OUTREACH TODAY: {velocity['outreach_count_today']}/{velocity['target']}
-US SIDE TOUCHES TODAY: {velocity['us_side_touches_today']}
-INMAILS REMAINING: {velocity['inmails_remaining']}
 
-DAILY COMPARISON (today vs yesterday):
-{week_comparison}
+OUTREACH — TODAY (day not yet complete):
+Today so far: {velocity['outreach_count_today']} (target: {velocity['target']})
+
+OUTREACH TREND — completed days only:
+Yesterday: {velocity['outreach_count_yesterday']}
+Day before yesterday: {velocity.get('outreach_count_two_days_ago', 'N/A')}
+
+US SIDE — TODAY (day not yet complete):
+Today so far: {velocity['us_side_touches_today']}
+
+US SIDE TREND — completed days only:
+Yesterday: {velocity['us_side_touches_yesterday']}
+Two days ago: {velocity['us_side_touches_two_days_ago']}
 
 STRATEGIC REFRAMINGS (last 24h):
 {reframings}
@@ -134,7 +142,7 @@ HISTORICAL PARALLELS (past activities similar to current stalls):
             "role": "user",
             "content": f"""Generate the Tangier daily brief using this structure:
 
-1. VELOCITY CHECK — outreach count vs target, week-on-week direction, U.S.-side status. Two to four sentences. Sober, not punitive.
+1. VELOCITY CHECK — two to four sentences only. State today's outreach count against the target. Today is not yet complete — do not compare today to yesterday as if both days are finished. For trend, compare yesterday vs the day before yesterday (both complete days). State U.S.-side: today's number so far, then yesterday vs two days ago as the trend. Do not invent targets, quotas, or commitments not present in the data.
 
 2. WHAT MOVED — only things that actually advanced. Strategic reframings count. One to two sentences per item. One sentence for a win, move on.
 

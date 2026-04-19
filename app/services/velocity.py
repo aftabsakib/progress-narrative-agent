@@ -36,6 +36,11 @@ def get_velocity_summary() -> dict:
         .eq("date", yesterday.isoformat())\
         .execute()
 
+    activities_two_days_ago = db.table("activities")\
+        .select("id")\
+        .eq("date", (today - timedelta(days=2)).isoformat())\
+        .execute()
+
     contacts = db.table("contacts")\
         .select("*")\
         .eq("tier", "1")\
@@ -89,6 +94,7 @@ def get_velocity_summary() -> dict:
     return {
         "outreach_count_today": count_today,
         "outreach_count_yesterday": count_yesterday,
+        "outreach_count_two_days_ago": len(activities_two_days_ago.data),
         "target": 10,
         "on_target": count_today >= 10,
         "stalled_tier1": stalled_tier1,
