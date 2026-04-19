@@ -54,37 +54,26 @@ def get_velocity_summary() -> dict:
         .execute()
     us_ids = [c["id"] for c in us_contacts.data]
 
-    # Count US-side touches by activity_type (catches bulk logs without contact_id)
-    # OR by contact_id matching a US-side contact — take the union
-    us_by_type_today = db.table("activities")\
-        .select("id")\
-        .eq("date", today.isoformat())\
-        .eq("activity_type", "us_side_outreach")\
-        .execute()
-    us_by_type_yesterday = db.table("activities")\
-        .select("id")\
-        .eq("date", yesterday.isoformat())\
-        .eq("activity_type", "us_side_outreach")\
-        .execute()
+    two_days_ago = today - timedelta(days=2)
 
-    if us_ids:
-        us_by_contact_today = db.table("activities")\
+    def _count_us_touches(day):
+        by_type = db.table("activities")\
             .select("id")\
-            .eq("date", today.isoformat())\
-            .in_("contact_id", us_ids)\
+            .eq("date", day.isoformat())\
+            .eq("activity_type", "us_side_outreach")\
             .execute()
-        us_by_contact_yesterday = db.table("activities")\
-            .select("id")\
-            .eq("date", yesterday.isoformat())\
-            .in_("contact_id", us_ids)\
-            .execute()
-        us_touch_count = len({a["id"] for a in us_by_type_today.data} |
-                              {a["id"] for a in us_by_contact_today.data})
-        us_touch_count_yesterday = len({a["id"] for a in us_by_type_yesterday.data} |
-                                        {a["id"] for a in us_by_contact_yesterday.data})
-    else:
-        us_touch_count = len(us_by_type_today.data)
-        us_touch_count_yesterday = len(us_by_type_yesterday.data)
+        if us_ids:
+            by_contact = db.table("activities")\
+                .select("id")\
+                .eq("date", day.isoformat())\
+                .in_("contact_id", us_ids)\
+                .execute()
+            return len({a["id"] for a in by_type.data} | {a["id"] for a in by_contact.data})
+        return len(by_type.data)
+
+    us_touch_count = _count_us_touches(today)
+    us_touch_count_yesterday = _count_us_touches(yesterday)
+    us_touch_count_two_days_ago = _count_us_touches(two_days_ago)
 
     metrics = db.table("velocity_metrics")\
         .select("*")\
@@ -105,6 +94,7 @@ def get_velocity_summary() -> dict:
         "stalled_tier1": stalled_tier1,
         "us_side_touches_today": us_touch_count,
         "us_side_touches_yesterday": us_touch_count_yesterday,
+        "us_side_touches_two_days_ago": us_touch_count_two_days_ago,
         "inmails_remaining": inmails_remaining,
         "aaep_days_remaining": get_aaep_days_remaining(),
     }

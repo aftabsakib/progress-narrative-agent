@@ -49,8 +49,8 @@ def get_velocity_report() -> str:
     target = v["target"]
     us_today = v["us_side_touches_today"]
     us_yesterday = v["us_side_touches_yesterday"]
+    us_two_days_ago = v["us_side_touches_two_days_ago"]
     aaep = v["aaep_days_remaining"]
-    inmails = v["inmails_remaining"]
 
     # Outreach line
     if tc == 0:
@@ -72,20 +72,19 @@ def get_velocity_report() -> str:
     else:
         comparison_line = f"Yesterday was {yc}. Same pace."
 
-    # US-side line
-    if us_today == 0 and us_yesterday == 0:
-        us_line = "U.S.-side outreach is at zero. It has been zero for at least two days."
-    elif us_today == 0:
-        us_line = f"U.S.-side touches are zero today. Yesterday was {us_yesterday}. The lane needs to run every day."
-    elif us_today > us_yesterday:
-        us_line = f"U.S.-side: {us_today} today, up from {us_yesterday} yesterday."
+    # US-side: show 3-day trend to surface progress
+    if us_yesterday > us_two_days_ago:
+        us_trend = f"Up from {us_two_days_ago} the day before. Progress."
+    elif us_yesterday == 0 and us_two_days_ago == 0:
+        us_trend = "Zero for at least two days running."
     else:
-        us_line = f"U.S.-side: {us_today} today, {us_yesterday} yesterday."
+        us_trend = f"{us_two_days_ago} the day before."
 
-    # InMail line
-    inmail_line = f"{inmails} InMails remain. The inventory is not the problem. The activity is." if inmails > 0 else "InMails exhausted."
+    if us_today == 0:
+        us_line = f"U.S.-side: zero today. Yesterday was {us_yesterday}. {us_trend}"
+    else:
+        us_line = f"U.S.-side: {us_today} today. Yesterday was {us_yesterday}. {us_trend}"
 
-    # AAEP line
     aaep_line = f"AAEP window closes in {aaep} days."
 
     lines = [
@@ -96,16 +95,16 @@ def get_velocity_report() -> str:
         "",
         us_line,
         "",
-        inmail_line,
         aaep_line,
     ]
 
     if v["stalled_tier1"]:
-        lines += ["", f"Tier 1 stalled ({len(v['stalled_tier1']):}):"]
+        lines += ["", f"Tier 1 ({len(v['stalled_tier1'])} not yet touched in the system):"]
         for contact in v["stalled_tier1"]:
             last = date.fromisoformat(contact["last_touched"]) if contact.get("last_touched") else None
             days = calculate_days_stalled(last)
-            lines.append(f"  {contact['name']} ({contact.get('company', '')}) — {days} days.")
+            label = "not yet logged" if days >= 999 else f"{days} days"
+            lines.append(f"  {contact['name']} ({contact.get('company', '')}) — {label}.")
     else:
         lines += ["", "No Tier 1 stalls. All entities touched within five days."]
 
