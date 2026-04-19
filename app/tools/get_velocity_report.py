@@ -43,25 +43,70 @@ def get_velocity_report() -> str:
     else:
         trend = "same as yesterday"
 
+    today_str = date.today().isoformat()
+    tc = v["outreach_count_today"]
+    yc = v["outreach_count_yesterday"]
+    target = v["target"]
+    us_today = v["us_side_touches_today"]
+    us_yesterday = v["us_side_touches_yesterday"]
+    aaep = v["aaep_days_remaining"]
+    inmails = v["inmails_remaining"]
+
+    # Outreach line
+    if tc == 0:
+        outreach_line = f"Zero outreach today against a target of {target}."
+    elif tc >= target:
+        outreach_line = f"{tc} outreaches today. Target is {target}. On track."
+    else:
+        outreach_line = f"{tc} outreaches today against a target of {target}."
+
+    # Day comparison
+    if yc == 0:
+        comparison_line = "No activity logged yesterday."
+    elif tc == 0 and yc > 0:
+        comparison_line = f"Yesterday was {yc}. The drop is total, not partial."
+    elif tc > yc:
+        comparison_line = f"Yesterday was {yc}. Up {tc - yc}."
+    elif tc < yc:
+        comparison_line = f"Yesterday was {yc}. Down {yc - tc}."
+    else:
+        comparison_line = f"Yesterday was {yc}. Same pace."
+
+    # US-side line
+    if us_today == 0 and us_yesterday == 0:
+        us_line = "U.S.-side outreach is at zero. It has been zero for at least two days."
+    elif us_today == 0:
+        us_line = f"U.S.-side touches are zero today. Yesterday was {us_yesterday}. The lane needs to run every day."
+    elif us_today > us_yesterday:
+        us_line = f"U.S.-side: {us_today} today, up from {us_yesterday} yesterday."
+    else:
+        us_line = f"U.S.-side: {us_today} today, {us_yesterday} yesterday."
+
+    # InMail line
+    inmail_line = f"{inmails} InMails remain. The inventory is not the problem. The activity is." if inmails > 0 else "InMails exhausted."
+
+    # AAEP line
+    aaep_line = f"AAEP window closes in {aaep} days."
+
     lines = [
-        f"VELOCITY REPORT — {date.today().isoformat()}",
+        f"Velocity — {today_str}",
         "",
-        f"Outreach today:      {v['outreach_count_today']}/{v['target']} {'ON TARGET' if v['on_target'] else 'BELOW TARGET'}",
-        f"Yesterday:           {yesterday_count} activities — {trend}",
-        f"AAEP window:         {v['aaep_days_remaining']} days remaining",
-        f"InMails available:   {v['inmails_remaining']}",
-        f"U.S.-side today:     {v['us_side_touches_today']} touches (yesterday: {v['us_side_touches_yesterday']})",
-        f"US LinkedIn (7d):    {us_linkedin} outreaches {'— ZERO this week' if us_linkedin == 0 else ''}",
+        outreach_line,
+        comparison_line,
         "",
-        f"TIER 1 STALLED ({len(v['stalled_tier1'])}):",
+        us_line,
+        "",
+        inmail_line,
+        aaep_line,
     ]
 
-    for contact in v["stalled_tier1"]:
-        last = date.fromisoformat(contact["last_touched"]) if contact.get("last_touched") else None
-        days = calculate_days_stalled(last)
-        lines.append(f"  - {contact['name']} ({contact.get('company', '')}) — {days} days")
-
-    if not v["stalled_tier1"]:
-        lines.append("  None — all Tier 1 entities touched within 5 days.")
+    if v["stalled_tier1"]:
+        lines += ["", f"Tier 1 stalled ({len(v['stalled_tier1']):}):"]
+        for contact in v["stalled_tier1"]:
+            last = date.fromisoformat(contact["last_touched"]) if contact.get("last_touched") else None
+            days = calculate_days_stalled(last)
+            lines.append(f"  {contact['name']} ({contact.get('company', '')}) — {days} days.")
+    else:
+        lines += ["", "No Tier 1 stalls. All entities touched within five days."]
 
     return "\n".join(lines)
