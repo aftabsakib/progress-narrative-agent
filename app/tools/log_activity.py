@@ -50,8 +50,9 @@ async def log_activity(input: LogActivityInput) -> str:
 
         contact_id = _resolve_contact_id(contact_name)
         embedding = embed_text(description)
+        activity_date = input.activity_date or date.today()
         db.table("activities").insert({
-            "date": date.today().isoformat(),
+            "date": activity_date.isoformat(),
             "source": input.source,
             "description": description,
             "activity_type": action_type,

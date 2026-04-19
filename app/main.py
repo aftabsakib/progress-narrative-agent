@@ -75,7 +75,8 @@ async def list_tools() -> list[Tool]:
                 "properties": {
                     "text": {"type": "string"},
                     "created_by": {"type": "string", "enum": ["faisal", "aftab"]},
-                    "source": {"type": "string", "default": "manual"}
+                    "source": {"type": "string", "default": "manual"},
+                    "activity_date": {"type": "string", "description": "Date the activity happened (YYYY-MM-DD). Defaults to today. Use this when logging activities that happened yesterday or earlier."}
                 },
                 "required": ["text"]
             }

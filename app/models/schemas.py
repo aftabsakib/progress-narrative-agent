@@ -41,6 +41,7 @@ class LogActivityInput(BaseModel):
     text: str
     created_by: str
     source: str = "manual"
+    activity_date: Optional[date] = None  # if omitted, defaults to today
 
 
 class AddCommitmentInput(BaseModel):
