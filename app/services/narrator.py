@@ -142,7 +142,7 @@ HISTORICAL PARALLELS (past activities similar to current stalls):
             "role": "user",
             "content": f"""Generate the Tangier daily brief using this structure:
 
-1. VELOCITY CHECK — two to four sentences only. State today's outreach count against the target. Today is not yet complete — do not compare today to yesterday as if both days are finished. For trend, compare yesterday vs the day before yesterday (both complete days). State U.S.-side: today's number so far, then yesterday vs two days ago as the trend. Do not invent targets, quotas, or commitments not present in the data.
+1. VELOCITY CHECK — two to four sentences only. State today's outreach count against the target. Today is not yet complete — do not compare today to yesterday as if both days are finished. For trend, compare yesterday vs the day before yesterday (both complete days). For U.S.-side: state today's number, then compare yesterday vs two days ago. If yesterday was significantly higher than the day before (especially if it went from zero to any positive number), name that as progress — one short sentence, then move on. Do not invent targets, quotas, or commitments not present in the data.
 
 2. WHAT MOVED — only things that actually advanced. Strategic reframings count. One to two sentences per item. One sentence for a win, move on.
 
