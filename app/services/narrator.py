@@ -94,23 +94,17 @@ def generate_daily_brief() -> str:
 
     historical_parallels = get_parallels_for_stalled_contacts(stalled_tier1)
 
+    day_yesterday = (today - timedelta(days=1)).strftime("%A")
+    day_two_ago = (today - timedelta(days=2)).strftime("%A")
+
     context = f"""
 DATE: {today.isoformat()}
 AAEP DAYS REMAINING: {velocity['aaep_days_remaining']}
 
-OUTREACH — TODAY (day not yet complete):
-Today so far: {velocity['outreach_count_today']} (target: {velocity['target']})
-
-OUTREACH TREND — completed days only:
-Yesterday: {velocity['outreach_count_yesterday']}
-Day before yesterday: {velocity.get('outreach_count_two_days_ago', 'N/A')}
-
-US SIDE — TODAY (day not yet complete):
-Today so far: {velocity['us_side_touches_today']} (target: {velocity['us_side_target']})
-
-US SIDE TREND — completed days only:
-Yesterday: {velocity['us_side_touches_yesterday']}
-Two days ago: {velocity['us_side_touches_two_days_ago']}
+US SIDE OUTREACH — completed days only (daily target: {velocity['us_side_target']}):
+{day_yesterday}: {velocity['us_side_touches_yesterday']}
+{day_two_ago}: {velocity['us_side_touches_two_days_ago']}
+NOTE: Sunday outreach is intentionally zero — treat as a rest day, not a failure.
 
 STRATEGIC REFRAMINGS (last 24h):
 {reframings}
@@ -142,7 +136,11 @@ HISTORICAL PARALLELS (past activities similar to current stalls):
             "role": "user",
             "content": f"""Generate the Tangier daily brief using this structure:
 
-1. VELOCITY CHECK — two to four sentences only. State today's outreach count against the target. Today is not yet complete — do not compare today to yesterday as if both days are finished. For trend, compare yesterday vs the day before yesterday (both complete days). For U.S.-side: state today's number, then compare yesterday vs two days ago. If yesterday was significantly higher than the day before (especially if it went from zero to any positive number), name that as progress — one short sentence, then move on. Do not invent targets, quotas, or commitments not present in the data.
+1. VELOCITY CHECK — U.S.-side outreach only. Do not mention today's numbers — the day has not started. Use only completed days from the data. Three to five sentences maximum. No repetition — each fact once.
+
+Write it as a pace report, not a status update. The reader wants to know: are we faster or slower than the day before, and what are two or three concrete actions that would increase the speed today. Name the actions specifically — not "reach out more" but "send connection requests to think tank researchers before noon." If Sunday shows zero, note it is a rest day and move on. Do not turn it into a warning.
+
+State the AAEP days remaining once, as the urgency clock behind everything.
 
 2. WHAT MOVED — only things that actually advanced. Strategic reframings count. One to two sentences per item. One sentence for a win, move on.
 
