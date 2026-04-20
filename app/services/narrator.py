@@ -168,7 +168,7 @@ State the AAEP days remaining once, as the urgency clock behind everything.
 
 2. WHAT MOVED — draw only from PIPELINE STAGE CHANGES, MEANINGFUL ACTIVITIES, and STRATEGIC REFRAMINGS. A follow-up email sent to a contact who hasn't replied is not movement. A response received is. A stage change is. A proposal sent for the first time is. A second or third follow-up is not. One sentence per item. If nothing genuinely moved, say so in one sentence and move on.
 
-3. WHAT IS AT RISK — contacts not touched and not in PENDING RESPONSE. Anything in PENDING RESPONSE is waiting — do not flag it as stalled, do not surface it as a priority, do not mention it unless the wait has exceeded 7 days. A contact not touched at all is different from a contact where a proposal is out. Name the difference. Order by urgency and strategic weight.
+3. WHERE THINGS STAND — contacts not touched and not in PENDING RESPONSE. Anything in PENDING RESPONSE is waiting — do not flag it as stalled, do not surface it as a priority, do not mention it unless the wait has exceeded 7 days. A contact not touched at all is different from a contact where a proposal is out. Name the difference. Order by urgency and strategic weight.
 
 4. TODAY'S PRIORITIES — the primary action first, then every other action that genuinely needs to happen today. No artificial limit. Each one sentence, direct and specific. Not "consider sending" — "send it." Not "confirm whether X happened" — "call X, the meeting isn't confirmed." Every priority names the action and the person or thing it applies to. Include all upcoming commitments due within 48 hours.
 
