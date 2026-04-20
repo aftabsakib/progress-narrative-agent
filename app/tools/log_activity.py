@@ -64,10 +64,11 @@ async def log_activity(input: LogActivityInput) -> str:
         results["activities_logged"] += 1
 
     for commitment in extracted.get("commitments", []):
+        promised_by = commitment.get("promised_by") or input.created_by
         db.table("commitments").insert({
             "description": commitment["description"],
             "due_date": commitment.get("due_date"),
-            "promised_by": commitment.get("promised_by", "unknown"),
+            "promised_by": promised_by,
             "status": "open"
         }).execute()
         results["commitments_logged"] += 1
