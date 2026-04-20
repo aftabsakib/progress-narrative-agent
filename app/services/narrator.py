@@ -61,9 +61,27 @@ def generate_daily_brief() -> str:
     velocity = get_velocity_summary()
     today = date.today()
 
-    activities = db.table("activities")\
+    # Only meaningful action types — not follow-ups or check-ins
+    all_activities = db.table("activities")\
         .select("*")\
         .gte("date", (today - timedelta(days=1)).isoformat())\
+        .execute()
+
+    moved_types = {"proposal_sent", "call", "response_received", "asset_created", "strategic_reframing"}
+    activities = type("R", (), {"data": [a for a in all_activities.data if a.get("activity_type") in moved_types]})()
+
+    # Pipeline stage changes in the last 7 days
+    stage_changes = db.table("pipeline_events")\
+        .select("*, contacts(name, company)")\
+        .gte("date", (today - timedelta(days=7)).isoformat())\
+        .order("date", desc=True)\
+        .execute()
+
+    # Contacts with a sent artifact awaiting response — these are in a waiting state
+    pending_response = db.table("artifacts")\
+        .select("*, contacts(name, company)")\
+        .eq("response_received", False)\
+        .not_.is_("sent_date", "null")\
         .execute()
 
     overdue = db.table("commitments")\
@@ -106,11 +124,17 @@ US SIDE OUTREACH — completed days only (daily target: {velocity['us_side_targe
 {day_two_ago}: {velocity['us_side_touches_two_days_ago']}
 NOTE: Sunday outreach is intentionally zero — treat as a rest day, not a failure.
 
+PIPELINE STAGE CHANGES (last 7 days):
+{chr(10).join(f"- {e['contacts']['name'] if e.get('contacts') else 'Unknown'} — Stage {e['from_stage']} to {e['to_stage']} on {e['date']}" for e in stage_changes.data) or "None"}
+
+MEANINGFUL ACTIVITIES (last 24h — proposals sent, calls, responses received, assets created):
+{chr(10).join(f"- [{a.get('created_by', '?')}] {a['description']}" for a in activities.data) or "None"}
+
 STRATEGIC REFRAMINGS (last 24h):
 {reframings}
 
-ACTIVITIES TODAY ({len(activities.data)}):
-{chr(10).join(f"- [{a.get('created_by', '?')}] {a['description']}" for a in activities.data) or "None logged"}
+PENDING RESPONSE — proposal or artifact sent, no reply yet (do not flag as stalled or at risk):
+{chr(10).join(f"- {p['contacts']['name'] if p.get('contacts') else 'Unknown'} — {p['type']} sent {p['sent_date']}" for p in pending_response.data) or "None"}
 
 TIER 1 PIPELINE ({len(tier1_contacts)} contacts):
 {chr(10).join(f"- {c['name']} ({c.get('company', '')}) — Stage {c.get('role_stage', 1)} — last touched: {c.get('last_touched', 'never')} — stalled {c.get('days_stalled') or 0}d" for c in tier1_contacts) or "None"}
@@ -142,9 +166,9 @@ Write it as a pace report, not a status update. The reader wants to know: are we
 
 State the AAEP days remaining once, as the urgency clock behind everything.
 
-2. WHAT MOVED — only things that actually advanced. Strategic reframings count. One to two sentences per item. One sentence for a win, move on.
+2. WHAT MOVED — draw only from PIPELINE STAGE CHANGES, MEANINGFUL ACTIVITIES, and STRATEGIC REFRAMINGS. A follow-up email sent to a contact who hasn't replied is not movement. A response received is. A stage change is. A proposal sent for the first time is. A second or third follow-up is not. One sentence per item. If nothing genuinely moved, say so in one sentence and move on.
 
-3. WHAT IS AT RISK — items that are genuinely at risk, ordered by urgency and strategic weight. Name the specific problem and the specific action required. Distinguish between a proposal pending response (not stalled) and a contact not touched (stalled). US LinkedIn outreach is a named strategic lane — flag if zero. If HISTORICAL PARALLELS are provided, reference what worked in past similar situations — one sentence per stall, only if the parallel is genuinely instructive.
+3. WHAT IS AT RISK — contacts not touched and not in PENDING RESPONSE. Anything in PENDING RESPONSE is waiting — do not flag it as stalled, do not surface it as a priority, do not mention it unless the wait has exceeded 7 days. A contact not touched at all is different from a contact where a proposal is out. Name the difference. Order by urgency and strategic weight.
 
 4. TODAY'S PRIORITIES — the primary action first, then every other action that genuinely needs to happen today. No artificial limit. Each one sentence, direct and specific. Not "consider sending" — "send it." Not "confirm whether X happened" — "call X, the meeting isn't confirmed." Every priority names the action and the person or thing it applies to. Include all upcoming commitments due within 48 hours.
 
