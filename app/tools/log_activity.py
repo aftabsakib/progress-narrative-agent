@@ -96,6 +96,15 @@ async def log_activity(input: LogActivityInput) -> str:
 
     results["contacts_mentioned"] = extracted.get("contacts_mentioned", [])
 
+    # Auto-close commitments that match logged activities
+    activity_descriptions = [
+        a.get("description", "") if isinstance(a, dict) else str(a)
+        for a in extracted.get("activities", [])
+        if (a.get("description", "") if isinstance(a, dict) else str(a))
+    ]
+    from app.services.commitment_matcher import auto_close_matched_commitments
+    closed = auto_close_matched_commitments(activity_descriptions)
+
     summary = (
         f"Logged {results['activities_logged']} activities, "
         f"{results['commitments_logged']} commitments"
@@ -104,5 +113,7 @@ async def log_activity(input: LogActivityInput) -> str:
         summary += f", {results['reframings_logged']} strategic reframings"
     if results["contacts_mentioned"]:
         summary += f". Contacts: {', '.join(results['contacts_mentioned'])}"
+    if closed:
+        summary += f". {len(closed)} commitment(s) marked done automatically."
 
     return summary + "."

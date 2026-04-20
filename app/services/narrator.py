@@ -172,11 +172,13 @@ State the AAEP days remaining once, as the urgency clock behind everything.
 
 4. TODAY'S PRIORITIES — two parts, hard structure:
 
-PART A — THE TOP THREE. Exactly three actions, ranked by strategic leverage. Leverage is defined as: actions that could directly generate an engagement, reach the most contacts at once, unblock a stalled relationship, or have a hard deadline today. Apply the three strategic tests to rank: (1) makes outreach more effective, (2) advances a Tier 1 relationship, (3) builds U.S.-side credibility. The highest-scoring action is first. Each one sentence. Direct and specific — not "send outreach" but "send the Federal Register newsletter to telco principals today — it goes to 150+ decision-makers and can generate inbound."
+Before listing anything, cross-check every open commitment against MEANINGFUL ACTIVITIES from the last 48 hours. If a matching activity was already logged (same contact, same action — e.g. "sent outreach to Nizar Bouguila" matches "Send Inwi outreach to Nizar Bouguila"), exclude that commitment from both Part A and Part B entirely. Do not surface things already done.
+
+PART A — THE TOP THREE. Exactly three actions from what remains, ranked by strategic leverage. Leverage is defined as: actions that could directly generate an engagement, reach the most contacts at once, unblock a stalled relationship, or have a hard deadline today. Apply the three strategic tests to rank: (1) makes outreach more effective, (2) advances a Tier 1 relationship, (3) builds U.S.-side credibility. The highest-scoring action is first. Each one sentence. Direct and specific — not "send outreach" but "send the Federal Register newsletter to telco principals today — it goes to 150+ decision-makers and can generate inbound."
 
 PART B — ALSO ON THE PLATE. Everything else that needs to happen, in a plain list. One line each. No elaboration. These are real tasks but not the top three.
 
-No more than three in Part A. No exceptions. The discipline of the top three is the point — it forces a real prioritization decision, not a dump of everything logged.
+No more than three in Part A. No exceptions.
 
 DATA:
 {context}"""
