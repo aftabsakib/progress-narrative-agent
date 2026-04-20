@@ -16,11 +16,13 @@ def get_recent_activity(hours: int = 24, limit: int = 30) -> str:
     if not rows.data:
         return f"No activities logged in the last {hours} hours."
 
-    # Deduplicate by description (same text logged twice from same transcript)
+    # Deduplicate by description and skip blank or UUID-only descriptions
     seen_descriptions = set()
     unique_rows = []
     for r in rows.data:
         desc = r.get("description", "").strip()
+        if not desc or len(desc) == 36 and desc.count("-") == 4:
+            continue
         if desc not in seen_descriptions:
             seen_descriptions.add(desc)
             unique_rows.append(r)
@@ -30,7 +32,7 @@ def get_recent_activity(hours: int = 24, limit: int = 30) -> str:
     no_contact = []
 
     for r in unique_rows:
-        contact = r.get("contact_name") or r.get("contact_id") or None
+        contact = r.get("contact_name") or None
         description = r.get("description", "")
         who = r.get("created_by", "?")
         ts = r.get("created_at", "")[:16].replace("T", " ")
