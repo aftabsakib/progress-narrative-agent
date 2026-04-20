@@ -170,6 +170,15 @@ State the AAEP days remaining once, as the urgency clock behind everything.
 
 3. WHERE THINGS STAND — contacts not touched and not in PENDING RESPONSE. Anything in PENDING RESPONSE is waiting — do not flag it as stalled, do not surface it as a priority, do not mention it unless the wait has exceeded 7 days. A contact not touched at all is different from a contact where a proposal is out. Name the difference. Order by urgency and strategic weight.
 
+Format each item exactly like this:
+**Contact or Entity Name (Company if relevant).** Two to four short sentences: what happened, what the current status is, why it matters. End with one direct action instruction.
+
+If there is a deadline, format the label as: **Contact — due [date].**
+Example: **Omantel outreach — due today.** Not logged as sent. Omantel is at Stage 2 with no touch recorded. This is a Tier 1 principal. Send today.
+Example: **Ncell.** CEO confirmed the proposal fits. Then silence after POC guidance. A follow-up email is due today. Send it now, not at end of week.
+
+No bullet points. No numbering. Each item is its own paragraph with a bold lead.
+
 4. TODAY'S PRIORITIES — two parts, hard structure:
 
 Before listing anything, cross-check every open commitment against MEANINGFUL ACTIVITIES from the last 48 hours. If a matching activity was already logged (same contact, same action — e.g. "sent outreach to Nizar Bouguila" matches "Send Inwi outreach to Nizar Bouguila"), exclude that commitment from both Part A and Part B entirely. Do not surface things already done.
