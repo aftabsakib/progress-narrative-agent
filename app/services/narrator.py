@@ -170,9 +170,13 @@ State the AAEP days remaining once, as the urgency clock behind everything.
 
 3. WHERE THINGS STAND — contacts not touched and not in PENDING RESPONSE. Anything in PENDING RESPONSE is waiting — do not flag it as stalled, do not surface it as a priority, do not mention it unless the wait has exceeded 7 days. A contact not touched at all is different from a contact where a proposal is out. Name the difference. Order by urgency and strategic weight.
 
-4. TODAY'S PRIORITIES — the primary action first, then every other action that genuinely needs to happen today. No artificial limit. Each one sentence, direct and specific. Not "consider sending" — "send it." Not "confirm whether X happened" — "call X, the meeting isn't confirmed." Every priority names the action and the person or thing it applies to. Include all upcoming commitments due within 48 hours.
+4. TODAY'S PRIORITIES — two parts, hard structure:
 
-Keep it tight. No filler. No hedging. Name the action, name the target, move on.
+PART A — THE TOP THREE. Exactly three actions, ranked by strategic leverage. Leverage is defined as: actions that could directly generate an engagement, reach the most contacts at once, unblock a stalled relationship, or have a hard deadline today. Apply the three strategic tests to rank: (1) makes outreach more effective, (2) advances a Tier 1 relationship, (3) builds U.S.-side credibility. The highest-scoring action is first. Each one sentence. Direct and specific — not "send outreach" but "send the Federal Register newsletter to telco principals today — it goes to 150+ decision-makers and can generate inbound."
+
+PART B — ALSO ON THE PLATE. Everything else that needs to happen, in a plain list. One line each. No elaboration. These are real tasks but not the top three.
+
+No more than three in Part A. No exceptions. The discipline of the top three is the point — it forces a real prioritization decision, not a dump of everything logged.
 
 DATA:
 {context}"""
