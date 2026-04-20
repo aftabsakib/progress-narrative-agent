@@ -61,14 +61,14 @@ def generate_daily_brief() -> str:
     velocity = get_velocity_summary()
     today = date.today()
 
-    # Only meaningful action types — not follow-ups or check-ins
+    # Actions Tangier took yesterday + genuine advances — exclude passive check-ins
     all_activities = db.table("activities")\
         .select("*")\
         .gte("date", (today - timedelta(days=1)).isoformat())\
         .execute()
 
-    moved_types = {"proposal_sent", "call", "response_received", "asset_created", "strategic_reframing"}
-    activities = type("R", (), {"data": [a for a in all_activities.data if a.get("activity_type") in moved_types]})()
+    excluded_types = {"internal", "update"}
+    activities = type("R", (), {"data": [a for a in all_activities.data if a.get("activity_type") not in excluded_types]})()
 
     # Pipeline stage changes in the last 7 days
     stage_changes = db.table("pipeline_events")\
@@ -166,7 +166,7 @@ Write it as a pace report, not a status update. The reader wants to know: are we
 
 State the AAEP days remaining once, as the urgency clock behind everything.
 
-2. WHAT MOVED — draw only from PIPELINE STAGE CHANGES, MEANINGFUL ACTIVITIES, and STRATEGIC REFRAMINGS. A follow-up email sent to a contact who hasn't replied is not movement. A response received is. A stage change is. A proposal sent for the first time is. A second or third follow-up is not. One sentence per item. If nothing genuinely moved, say so in one sentence and move on.
+2. WHAT MOVED — everything Tangier actually did yesterday: outreach sent, calls made, proposals submitted, assets created, responses received, stage changes, strategic reframings. One sentence per item. Group related items if they involve the same contact. If nothing was logged, say so in one sentence and move on.
 
 3. WHERE THINGS STAND — contacts not touched and not in PENDING RESPONSE. Anything in PENDING RESPONSE is waiting — do not flag it as stalled, do not surface it as a priority, do not mention it unless the wait has exceeded 7 days. A contact not touched at all is different from a contact where a proposal is out. Name the difference. Order by urgency and strategic weight.
 
