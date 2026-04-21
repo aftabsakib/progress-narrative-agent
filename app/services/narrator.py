@@ -61,10 +61,13 @@ def generate_daily_brief() -> str:
     velocity = get_velocity_summary()
     today = date.today()
 
-    # Actions Tangier took yesterday + genuine advances — exclude passive check-ins
+    # Actions logged in the last 24 hours — use created_at not date,
+    # so re-logged historical entries don't surface as recent movement
+    from datetime import datetime, timezone
+    since_24h = (datetime.now(timezone.utc) - timedelta(hours=24)).isoformat()
     all_activities = db.table("activities")\
         .select("*")\
-        .gte("date", (today - timedelta(days=1)).isoformat())\
+        .gte("created_at", since_24h)\
         .execute()
 
     excluded_types = {"internal", "update"}
