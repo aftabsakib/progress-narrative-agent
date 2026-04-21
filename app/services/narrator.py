@@ -65,7 +65,7 @@ def generate_daily_brief() -> str:
     # Dual filter prevents re-logged historical entries from appearing as recent movement.
     from datetime import datetime, timezone
     since_24h = (datetime.now(timezone.utc) - timedelta(hours=24)).isoformat()
-    cutoff_date = (today - timedelta(days=7)).isoformat()
+    cutoff_date = (today - timedelta(days=2)).isoformat()
     all_activities = db.table("activities")\
         .select("*")\
         .gte("created_at", since_24h)\
