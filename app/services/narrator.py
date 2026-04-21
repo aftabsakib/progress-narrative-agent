@@ -61,13 +61,15 @@ def generate_daily_brief() -> str:
     velocity = get_velocity_summary()
     today = date.today()
 
-    # Actions logged in the last 24 hours — use created_at not date,
-    # so re-logged historical entries don't surface as recent movement
+    # Actions logged in the last 24 hours AND dated within the last 7 days.
+    # Dual filter prevents re-logged historical entries from appearing as recent movement.
     from datetime import datetime, timezone
     since_24h = (datetime.now(timezone.utc) - timedelta(hours=24)).isoformat()
+    cutoff_date = (today - timedelta(days=7)).isoformat()
     all_activities = db.table("activities")\
         .select("*")\
         .gte("created_at", since_24h)\
+        .gte("date", cutoff_date)\
         .execute()
 
     excluded_types = {"internal", "update"}
